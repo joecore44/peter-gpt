@@ -21,8 +21,8 @@ document.addEventListener('submit', (e) => {
         role: 'user',
         content: userInput.value
     })
-    console.log(conversationArr)
 
+    fetchReply()
     const newSpeechBubble = document.createElement('div')
     newSpeechBubble.classList.add('speech', 'speech-human')
     chatbotConversation.appendChild(newSpeechBubble)
@@ -30,6 +30,16 @@ document.addEventListener('submit', (e) => {
     userInput.value = ''
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight
 })
+
+async function fetchReply(){
+    const response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: conversationArr
+    })
+    conversationArr.push(response.data.choices[0].message)
+    renderTypewriterText(response.data.choices[0].message.content)
+    console.log(conversationArr)
+}
 
 function renderTypewriterText(text) {
     const newSpeechBubble = document.createElement('div')
@@ -46,3 +56,4 @@ function renderTypewriterText(text) {
         chatbotConversation.scrollTop = chatbotConversation.scrollHeight
     }, 50)
 }
+
